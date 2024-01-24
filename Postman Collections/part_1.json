@@ -1,0 +1,440 @@
+{
+	"info": {
+		"_postman_id": "4541ceaf-b9f0-40b7-83e2-064a8dcb5d6f",
+		"name": "Chotdonnhanh",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var phone = \"0987334750\"",
+									"pm.environment.set(\"Sđt\", phone )",
+									"var password = \"ngan123123\"",
+									"pm.environment.set(\"Password\", password)"
+								],
+								"type": "text/javascript",
+								"id": "cac8f0c6-2b17-4783-95db-dd1a8b4c61ac"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Status code login is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response time should be less than 400ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(400);",
+									"});",
+									"",
+									"var jsonData = pm.response.json().data",
+									"console.log(jsonData)",
+									"var shop_1 = jsonData.shops[0]",
+									"var shop_1_id = shop_1._id",
+									"console.log('shop_1_id =', shop_1._id)",
+									"",
+									"pm.environment.set('shop_id',shop_1_id)",
+									"pm.environment.set(\"Token\", jsonData.token)",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"id": "53e47a9f-6ae4-4aaa-b8bd-bb7edad618b1"
+							}
+						}
+					],
+					"id": "4bae5906-7865-4417-ad81-8d8124b6e0cf",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"{{Sđt}}\",\n    \"password\": \"{{Password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url_dev}}/users/login"
+					},
+					"response": []
+				}
+			],
+			"id": "8da4a972-546e-4905-863b-eb56350ef97b"
+		},
+		{
+			"name": "Shop",
+			"item": [
+				{
+					"name": "Get list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Get list shop code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"console.log('jsonData',pm.response.json());",
+									"",
+									"pm.test('totalCount = shopCount', function(){",
+									"    var total_count = jsonData.data.total_count",
+									"    var shop_count = jsonData.data.shops.length",
+									"    pm.expect(total_count).eq(shop_count)",
+									"})",
+									"",
+									"pm.test('Test shop count > 0', function () {",
+									"    var shop_count = jsonData.data.shops.length",
+									"    pm.expect(shop_count).gt(0)",
+									"})",
+									"",
+									"pm.test('Response time should be less than 400ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(400);",
+									"});",
+									"",
+									"/*",
+									"// test coi xem co it nhat 1 shop hay khong",
+									"pm.test('Test co it nhat 1 shop', function() {",
+									"    var shopCount = jsonData.data.shops.length;",
+									"    ",
+									"    // Cach 1: Su dung pm.expect de test 1 gia tri",
+									"    // pm.expect(<bien>).<method_name>(gia tri so sanh, message khi failed)",
+									"    // gte: greater than or equal: >=",
+									"    // lte: less than or equal: <=",
+									"    // gt: greater than: >",
+									"    // le: less than: <",
+									"    // pm.expect(shopCount).gte(0, 'Khong co 1 cai shop nao het')",
+									"",
+									"    // Cach 2: Su dung if ",
+									"    // Chu y: Chi su dung if cho truong hop loi. Vi minh cung chang biet lam gi cho if trong truong hop pass ",
+									"    if (shopCount == 0) {",
+									"        throw Error('Khong so shop nao het')",
+									"    }",
+									"})",
+									"*/"
+								],
+								"type": "text/javascript",
+								"id": "382a3108-f2c1-4202-b9b3-5e1f25912cd2"
+							}
+						}
+					],
+					"id": "01b1b251-cd0f-4dbb-b564-5f8c458817ad",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{Token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paging\": {\n        \"limit\": 200,\n        \"offset\": 0,\n        \"sort\": {\n            \"created_at\": 1\n        }\n    },\n    \"filter\": {\n        \"text\": \"\"\n    }\n}"
+						},
+						"url": "{{url_dev}}/shop/list-shop"
+					},
+					"response": []
+				},
+				{
+					"name": "Get list page by shop",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"",
+									"pm.test(\"Status code get list page is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response time should be less than 400ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"id": "2450a4bb-e4a8-4eca-9dec-4cbd6d506bae"
+							}
+						}
+					],
+					"id": "f42cd00d-ca12-45c7-bd10-12122c2967c7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{Token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvd25lcl9pZCI6IjYyYjNlODcxMThjZTg2MmQyMzdhOTY4OCIsInR5cGUiOiJVU0VSIiwicm9sZSI6eyJvd25lcl9pZCI6IjYyYjNlODcxMThjZTg2MmQyMzdhOTY4OCIsIm5hbWUiOiJhZG1pbnN0YXRpb24iLCJyb2xlIjoiMCIsIm1vZHVsZXMiOltdLCJhY3Rpb25zIjpbXX0sImFjY291bnRfaWQiOiI2MmIzZTg3MjE4Y2U4NjJkMjM3YTk2OGQiLCJleHByaWVfYXQiOiIyMDI0LTAyLTA4VDA3OjMyOjQ2LjY5MloiLCJpYXQiOjE3MDIxOTM1NjYsImV4cCI6MTcwMjc5ODM2Nn0.ASmxtHXbnk7rJ36HiZdZ5kgJExWBFXajW0UvcWT7amI",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paging\": {\n        \"sort\": {\n            \"created_at\": -1\n        },\n        \"offset\": 0,\n        \"limit\": 20\n    },\n    \"filter\": {\n        \"text\": \"\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{url_socical}}/fb-page/shop/get-list/{{shop_id}}?shop_id={{shop_id}}",
+							"host": [
+								"{{url_socical}}"
+							],
+							"path": [
+								"fb-page",
+								"shop",
+								"get-list",
+								"{{shop_id}}"
+							],
+							"query": [
+								{
+									"key": "shop_id",
+									"value": "{{shop_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "784c443f-7613-4e63-9098-41df6073cc5b"
+		},
+		{
+			"name": "Conversation",
+			"item": [
+				{
+					"name": "Get list/filter",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"id": "01f7ecad-01a6-44de-95c2-40201a31e9ad"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Get list conversation is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"jsonData = pm.response.json()",
+									"console.log('jsonData',pm.response.json());",
+									"",
+									"pm.test('Conversation list >= 1', function(){",
+									"    var conversation_List = jsonData.data.length",
+									"    pm.expect(conversation_List).gte(1)",
+									"})",
+									"var data = jsonData.data;",
+									"var first_conversation_have_phone = null;",
+									"for (let i = 0; i < data.length; i++) {  ",
+									"    if (data[i]['phone_exists']){",
+									"        console.log(data[i].phone_numbers[0]) ",
+									"        first_conversation_have_phone = data[i];",
+									"        var name = data[i].fb_user_info.detail.name",
+									"        console.log('fb_user_name',name)",
+									"        break;",
+									"    }",
+									"}",
+									"var phone_numbers = first_conversation_have_phone[\"phone_numbers\"]",
+									"pm.environment.set('search phone', phone_numbers[0] )",
+									"var search_name = first_conversation_have_phone[\"name\"]",
+									"pm.environment.set('search name', name)",
+									"",
+									"pm.test('Response time should be less than 400ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(400);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"id": "20b9ca75-0ddc-4e40-82b7-024451374495"
+							}
+						}
+					],
+					"id": "5a643677-b69e-47ca-9fe5-ad2e2f1badb7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{Token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvd25lcl9pZCI6IjYyYjNlODcxMThjZTg2MmQyMzdhOTY4OCIsInR5cGUiOiJVU0VSIiwicm9sZSI6eyJvd25lcl9pZCI6IjYyYjNlODcxMThjZTg2MmQyMzdhOTY4OCIsIm5hbWUiOiJhZG1pbnN0YXRpb24iLCJyb2xlIjoiMCIsIm1vZHVsZXMiOltdLCJhY3Rpb25zIjpbXX0sImFjY291bnRfaWQiOiI2MmIzZTg3MjE4Y2U4NjJkMjM3YTk2OGQiLCJleHByaWVfYXQiOiIyMDI0LTAyLTA1VDAzOjIzOjUyLjYxNloiLCJpYXQiOjE3MDE5MTk0MzIsImV4cCI6MTcwMjUyNDIzMn0.TPQ3B9IafJTVuBOiFluYsuu0RFs7wNJuFZS9JI6SXAA"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"filter\": {\n        \"is_read\": [],\n        \"no_staff\": null,\n        \"no_tag\": null,\n        \"fb_user_id\": null,\n        \"fb_post_ids\": [],\n        \"fb_page_ids\": [],\n        \"has_phone\": [],\n        \"tag_ids\": [],\n        \"staff_ids\": [],\n        \"unreply\": null,\n        \"type\": null,               \n        \"from_date\": null,          \n        \"to_date\": null\n    },\n    \"paging\": {\n        \"limit\": 20,\n        \"offset\": 0,\n        \"sort\": {\n            \"pin_time\": -1,\n            \"updated_time\": -1\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "{{url_socical}}/fb-conversation/get-list/{{shop_id}}?shop_id={{shop_id}}",
+							"host": [
+								"{{url_socical}}"
+							],
+							"path": [
+								"fb-conversation",
+								"get-list",
+								"{{shop_id}}"
+							],
+							"query": [
+								{
+									"key": "shop_id",
+									"value": "{{shop_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"search_type = pm.environment.get('textsearch is phone')",
+									"console.log('search_type', )"
+								],
+								"type": "text/javascript",
+								"id": "0f2ab229-0022-4972-9caa-0cec34877212"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\" list conversation is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json()",
+									"var fb_conversation = jsonData.data.fb_conversation",
+									"",
+									"pm.test('totalCount = dataCount', function(){",
+									"    var total_count = fb_conversation.total_count",
+									"    var data_count = fb_conversation.data.length",
+									"    pm.expect(total_count).eq(data_count)",
+									"})",
+									"var conversation_id = fb_conversation.data[0].conversation_id",
+									"",
+									"pm.environment.set('conversation_id', conversation_id )",
+									" ",
+									"pm.test('Response time should be less than 400ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(400);",
+									"});"
+								],
+								"type": "text/javascript",
+								"id": "2496cf4a-775a-4e9f-9a4b-4f3606545a95"
+							}
+						}
+					],
+					"id": "a3dc3c1f-6472-4801-8d5c-42460bc5fa3b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{Token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvd25lcl9pZCI6IjYyYjNlODcxMThjZTg2MmQyMzdhOTY4OCIsInR5cGUiOiJVU0VSIiwicm9sZSI6eyJvd25lcl9pZCI6IjYyYjNlODcxMThjZTg2MmQyMzdhOTY4OCIsIm5hbWUiOiJhZG1pbnN0YXRpb24iLCJyb2xlIjoiMCIsIm1vZHVsZXMiOltdLCJhY3Rpb25zIjpbXX0sImFjY291bnRfaWQiOiI2MmIzZTg3MjE4Y2U4NjJkMjM3YTk2OGQiLCJleHByaWVfYXQiOiIyMDI0LTAyLTA4VDA3OjMyOjQ2LjY5MloiLCJpYXQiOjE3MDIxOTM1NjYsImV4cCI6MTcwMjc5ODM2Nn0.ASmxtHXbnk7rJ36HiZdZ5kgJExWBFXajW0UvcWT7amI",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paging\": {\n        \"limit\": 50\n    },\n    \"filter\": {\n        \"search_type\": null,        \n        \"text\": \"1\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{url_socical}}/fb-conversation/search/{{shop_id}}?shop_id={{shop_id}}",
+							"host": [
+								"{{url_socical}}"
+							],
+							"path": [
+								"fb-conversation",
+								"search",
+								"{{shop_id}}"
+							],
+							"query": [
+								{
+									"key": "shop_id",
+									"value": "{{shop_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "bb6a0c65-3089-43eb-9086-9bb2ac0ef5ea"
+		}
+	]
+}
